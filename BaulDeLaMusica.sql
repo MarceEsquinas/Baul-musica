@@ -60,5 +60,7 @@ CREATE TABLE IF NOT EXISTS resenia(
   id_elemento_lista INTEGER REFERENCES elemento_lista(id_elemento_lista) ON DELETE CASCADE,
   fecha_hora TIMESTAMP NOT NULL DEFAULT NOW(),
   puntuacion SMALLINT CHECK(puntuacion between 1 and 5)
-  --mejor miembro de la banda
+  
 
+);
+alter table resenia add column mejor_musico VARCHAR(100);
