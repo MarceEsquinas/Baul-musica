@@ -64,3 +64,5 @@ CREATE TABLE IF NOT EXISTS resenia(
 
 );
 alter table resenia add column mejor_musico VARCHAR(100);
+INSERT IN TO usuario(nombre,apellidos,dni,correo,rol) VALUES ("VERONICA","DIVITA",53464554,
+"vdivita@hotmail.com","empresaria");
