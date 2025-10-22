@@ -6,14 +6,29 @@ import pool from "./db.js"; // conexión centralizada
 const app = express();
 
 app.use(cors({                                             //le damos permiso para que se conecte con local host
-  origin: ["http://127.0.0.1:5500", "http://localhost:5500"],
+  origin: ["http://127.0.0.1:5500", "http://localhost:5500", "http://localhost:5173"],
   credentials: false,
 }));
 app.use(express.json());
 
+const frases = [
+  "No te rindas nunca",
+  "Al mal tiempo buena cara",
+  "Donde las dan, las toman"
+]
+var contador = 0
+
+function getFrase() {
+  if (contador >= frases.length - 1) {
+    contador = 0
+  }
+  contador++
+  return frases[contador]
+}
+
 // Healthcheck / raíz
 app.get("/", (_req, res) => {
-  res.send("hoy puede ser un dia maravilloso");
+  res.json({ frase: getFrase()});
 });
 
 // Ejemplo: listar usuarios (usa tu tabla 'usuario')
