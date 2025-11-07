@@ -67,3 +67,4 @@ alter table resenia add column mejor_musico VARCHAR(100);
 INSERT IN TO usuario(nombre,apellidos,dni,correo,rol) VALUES ("VERONICA","DIVITA",53464554,
 "vdivita@hotmail.com","empresaria");
 --falta por añadir artista a la tabla de cancion
+ALTER TABLE usuario ADD COLUMN password VARCHAR(255);
