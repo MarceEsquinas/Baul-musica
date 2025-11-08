@@ -1,7 +1,7 @@
 // db.js
 import { Pool } from "pg";
-import pkg from "pg";
-const { Pool }=pkg
+//import pkg from "pg";
+//const { Pool }=pkg
 
 const pool = new Pool({
   host: "localhost",

@@ -1,15 +1,57 @@
-// index.js
 import express from "express";
 import cors from "cors";
-import pool from "./db.js"; // conexión centralizada
+import pool from "./db.js";
+import authRoutes from "./routes/auth.js";
 
 const app = express();
 
+// CORS: permite Vite en localhost y 127.0.0.1
+app.use(
+  cors({
+    origin: ["http://localhost:5173", "http://127.0.0.1:5173 , http://127.0.0.1:5500", "http://localhost:5500"],
+    credentials: true,
+  })
+);
+
+app.use(express.json());
+
+// Rutas API
+app.use("/api/auth", authRoutes);
+
+// Healthcheck opcional
+app.get("/", (_req, res) => res.json({ ok: true }));
+
+const PORT = process.env.PORT || 2000;
+
+(async () => {
+  try {
+    await pool.query("SELECT 1"); // prueba BD
+    console.log("BD conectada ✅");
+    app.listen(PORT, () =>
+      console.log(`Servidor listo en http://localhost:${PORT}`)
+    );
+  } catch (e) {
+    console.error("No se pudo conectar a la BD:", e);
+    process.exit(1);
+  }
+})();
+
+// index.js
+/*import express from "express";
+import cors from "cors";
+import pool from "./db.js"; // conexión centralizada
+import authRoutes from "./routes/auth.js";
+const app = express();
+
 app.use(cors({                                             //le damos permiso para que se conecte con local host
-  origin: ["http://127.0.0.1:5500", "http://localhost:5500", "http://localhost:5173"],
+  origin: ["http://127.0.0.1:5500", "http://localhost:5500", "http://localhost:5173", "http://127.0.0.1:5173"],
   credentials: false,
 }));
-app.use(express.json());
+app.use(express.json());//midleware con cuerpo de json
+app.use("/api/auth",authRoutes);
+//app.listen(2000, () => console.log("Servidor corriendo en puerto 2000"));
+
+/*
 
 const frases = [
   "No te rindas nunca",
@@ -27,7 +69,7 @@ function getFrase() {
 }
 
 // Healthcheck / raíz
-app.get("/", (_req, res) => {
+app.get("/", (_req, res) => {    //cuando entramos a / responde con getFrase
   res.json({ frase: getFrase()});
 });
 
@@ -57,4 +99,4 @@ const PORT = process.env.PORT || 2000;
     console.error("No se pudo conectar a la BD:", e);
     process.exit(1);
   }
-})();
+})();*/

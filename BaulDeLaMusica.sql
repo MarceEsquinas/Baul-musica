@@ -68,3 +68,5 @@ INSERT IN TO usuario(nombre,apellidos,dni,correo,rol) VALUES ("VERONICA","DIVITA
 "vdivita@hotmail.com","empresaria");
 --falta por añadir artista a la tabla de cancion
 ALTER TABLE usuario ADD COLUMN password VARCHAR(255);
+INSERT usuario (nombre,apellidos,dni,correo,rol,password) VALUES ('paco','lobaton','53467975','lobaton@hotmail.com','limpieza',
+'23456');
