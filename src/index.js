@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import pool from "./db.js";
 import authRoutes from "./routes/auth.js";
+import playListRouthes from "./routes/playList.js";
 
 const app = express();
 
@@ -16,7 +17,10 @@ app.use(
 app.use(express.json());
 
 // Rutas API
+
+app.use("/api/playList", playListRouthes)
 app.use("/api/auth", authRoutes);
+
 
 // Healthcheck opcional
 app.get("/", (_req, res) => res.json({ ok: true }));

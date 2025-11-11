@@ -5,6 +5,7 @@ import pool from "../db.js";
 
 const router = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET || "cambia_esta_clave_super_secreta";
+const SALT = 10;
 router.get("/health", (req, res) => {
   res.json({ ok: true, route: "/api/auth/health" });
 });
@@ -26,8 +27,8 @@ router.post("/login", async (req, res) => {
     const user = result.rows[0];
 
     // 2) Comparar contraseña
-   // const ok = await bcrypt.compare(password, user.password);
-   const ok = password === user.password;
+   const ok = await bcrypt.compare(password, user.password);
+   //const ok = password === user.password;
     if (!ok) {
       return res.status(401).json({ message: "Contraseña incorrecta" });
     }
@@ -50,6 +51,49 @@ router.post("/login", async (req, res) => {
     });
   } catch (err) {
     console.error("Error en login:", err);
+    res.status(500).json({ message: "Error interno del servidor" });
+  }
+});
+router.post("/register", async (req, res) => {
+  const { nombre, apellidos, dni, correo, password } = req.body;
+
+  if (!nombre || !dni || !correo || !password) {
+    return res.status(400).json({ message: "Faltan campos obligatorios" });
+  }
+
+  try {
+    // duplicados
+    const dup = await pool.query(
+      "SELECT 1 FROM usuario WHERE correo = $1 OR dni = $2",
+      [correo, dni]
+    );
+    if (dup.rows.length > 0) {
+      return res.status(409).json({ message: "Correo o DNI ya registrado" });
+    }
+
+    // hash
+    const hash = await bcrypt.hash(password, SALT);
+
+    // insert
+    const insert = await pool.query(
+      `INSERT INTO usuario (nombre, apellidos, dni, correo, password, rol)
+       VALUES ($1,$2,$3,$4,$5,'usuario')
+       RETURNING id_usuario, nombre, rol`,
+      [nombre, apellidos || null, dni, correo, hash]
+    );
+
+    const user = insert.rows[0];
+
+    // token
+    const token = jwt.sign(
+      { id_usuario: user.id_usuario, nombre: user.nombre, rol: user.rol },
+      JWT_SECRET,
+      { expiresIn: "2h" }
+    );
+
+    res.status(201).json({ token, user });
+  } catch (e) {
+    console.error("REGISTER error:", e);
     res.status(500).json({ message: "Error interno del servidor" });
   }
 });
