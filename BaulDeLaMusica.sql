@@ -70,3 +70,5 @@ INSERT IN TO usuario(nombre,apellidos,dni,correo,rol) VALUES ("VERONICA","DIVITA
 ALTER TABLE usuario ADD COLUMN password VARCHAR(255);
 INSERT usuario (nombre,apellidos,dni,correo,rol,password) VALUES ('paco','lobaton','53467975','lobaton@hotmail.com','limpieza',
 '23456');
+ALTER TABLE album_detalle
+  ADD CONSTRAINT uniq_album_cancion UNIQUE (id_album, id_cancion);

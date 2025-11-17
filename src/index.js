@@ -3,6 +3,10 @@ import cors from "cors";
 import pool from "./db.js";
 import authRoutes from "./routes/auth.js";
 import playListRouthes from "./routes/playList.js";
+import songsRoutes from "./routes/songs.js";
+import albumsRoutes from "./routes/albums.js";
+
+
 
 const app = express();
 
@@ -17,7 +21,8 @@ app.use(
 app.use(express.json());
 
 // Rutas API
-
+app.use("/api/songs", songsRoutes);
+app.use("/api/albums", albumsRoutes);
 app.use("/api/playList", playListRouthes)
 app.use("/api/auth", authRoutes);
 
