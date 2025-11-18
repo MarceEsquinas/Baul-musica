@@ -2,10 +2,10 @@ import express from "express";
 import cors from "cors";
 import pool from "./db.js";
 import authRoutes from "./routes/auth.js";
-import playListRouthes from "./routes/playList.js";
+import playListRoutes from "./routes/playList.js";
 import songsRoutes from "./routes/songs.js";
 import albumsRoutes from "./routes/albums.js";
-import listsRoutes from "./routes/lilsts.js";
+import listsRoutes from "./routes/lists.js";
 
 
 
@@ -25,7 +25,7 @@ app.use(express.json());
 app.use("/api/lists",listsRoutes)
 app.use("/api/songs", songsRoutes);
 app.use("/api/albums", albumsRoutes);
-app.use("/api/playList", playListRouthes)
+app.use("/api/playList", playListRoutes)
 app.use("/api/auth", authRoutes);
 
 
