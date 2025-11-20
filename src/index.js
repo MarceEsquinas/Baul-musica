@@ -7,6 +7,8 @@ import songsRoutes from "./routes/songs.js";
 import albumsRoutes from "./routes/albums.js";
 import listsRoutes from "./routes/lists.js";
 import ReviewsRoutes from "./routes/reviews.js";
+import adminRoutes from "./routes/admin.js";
+
 
 
 const app = express();
@@ -22,6 +24,8 @@ app.use(
 app.use(express.json());
 
 // Rutas API
+
+app.use("/api/admin", adminRoutes);
 app.use("/api/reviews", ReviewsRoutes);
 app.use("/api/lists",listsRoutes)
 app.use("/api/songs", songsRoutes);
