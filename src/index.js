@@ -6,7 +6,7 @@ import playListRoutes from "./routes/playList.js";
 import songsRoutes from "./routes/songs.js";
 import albumsRoutes from "./routes/albums.js";
 import listsRoutes from "./routes/lists.js";
-
+import ReviewsRoutes from "./routes/reviews.js";
 
 
 const app = express();
@@ -22,6 +22,7 @@ app.use(
 app.use(express.json());
 
 // Rutas API
+app.use("/api/reviews", ReviewsRoutes);
 app.use("/api/lists",listsRoutes)
 app.use("/api/songs", songsRoutes);
 app.use("/api/albums", albumsRoutes);
