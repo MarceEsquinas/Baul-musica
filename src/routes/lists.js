@@ -23,35 +23,102 @@ function requireAuth(req, res, next) {
     return res.status(401).json({ message: "Token inválido o expirado" });
   }
 }
-// GET /api/lists/public  -> listas públicas de todos los usuarios (solo logueados)
-
 router.get("/public", requireAuth, async (req, res) => {
   try {
-    const q = `
+    // 👉 1. Listas públicas + nombre del creador
+    const listasQuery = await pool.query(`
       SELECT 
         l.id_lista,
         l.nombre_lista,
         l.creada_en,
-        l.es_publica,
-        u.nombre AS nombre_usuario,
-        u.apellidos AS apellidos_usuario,
-        COUNT(el.id_elemento_lista) AS num_elementos
+        u.nombre || ' ' || u.apellidos AS propietario
       FROM lista l
       JOIN usuario u ON u.id_usuario = l.id_usuario
-      LEFT JOIN elemento_lista el ON el.id_lista = l.id_lista
-      WHERE l.es_publica = true
-      GROUP BY l.id_lista, u.nombre, u.apellidos
-      ORDER BY l.creada_en DESC;
-    `;
+      WHERE l.es_publica = TRUE
+    `);
 
-    const { rows } = await pool.query(q);
-    res.json(rows);
+    const listas = listasQuery.rows;
+
+    // 👉 2. Para cada lista, cargamos sus reseñas con el nombre del que vota
+    for (const lista of listas) {
+      const reseniasQuery = await pool.query(
+        `
+        SELECT 
+          r.id_resenia,
+          r.puntuacion,
+          r.mejor_musico,
+          r.fecha_hora,
+          u.nombre || ' ' || u.apellidos AS autor
+        FROM resenia r
+        JOIN usuario u ON u.id_usuario = r.id_usuario
+        WHERE r.id_elemento_lista IN (
+          SELECT id_elemento_lista 
+          FROM elemento_lista 
+          WHERE id_lista = $1
+        )
+        ORDER BY r.fecha_hora DESC
+        `,
+        [lista.id_lista]
+      );
+
+      lista.resenias = reseniasQuery.rows;
+    }
+
+    res.json(listas);
   } catch (e) {
-    console.error("GET /lists/public error:", e);
-    res.status(500).json({ message: "Error obteniendo listas públicas" });
+    console.error("LISTS /public ERROR:", e);
+    res.status(500).json({ message: "Error cargando listas públicas" });
   }
 });
-// ---------- GET /api/lists/:id_lista (info de la lista) ----------
+router.get("/public", requireAuth, async (req, res) => {
+  try {
+    // 👉 1. Listas públicas + nombre del creador
+    const listasQuery = await pool.query(`
+      SELECT 
+        l.id_lista,
+        l.nombre_lista,
+        l.creada_en,
+        u.nombre || ' ' || u.apellidos AS propietario
+      FROM lista l
+      JOIN usuario u ON u.id_usuario = l.id_usuario
+      WHERE l.es_publica = TRUE
+    `);
+
+    const listas = listasQuery.rows;
+
+    // 👉 2. Para cada lista, cargamos sus reseñas con el nombre del que vota
+    for (const lista of listas) {
+      const reseniasQuery = await pool.query(
+        `
+        SELECT 
+          r.id_resenia,
+          r.puntuacion,
+          r.mejor_musico,
+          r.fecha_hora,
+          u.nombre || ' ' || u.apellidos AS autor
+        FROM resenia r
+        JOIN usuario u ON u.id_usuario = r.id_usuario
+        WHERE r.id_elemento_lista IN (
+          SELECT id_elemento_lista 
+          FROM elemento_lista 
+          WHERE id_lista = $1
+        )
+        ORDER BY r.fecha_hora DESC
+        `,
+        [lista.id_lista]
+      );
+
+      lista.resenias = reseniasQuery.rows;
+    }
+
+    res.json(listas);
+  } catch (e) {
+    console.error("LISTS /public ERROR:", e);
+    res.status(500).json({ message: "Error cargando listas públicas" });
+  }
+});
+
+
 router.get("/:id_lista", requireAuth, async (req, res) => {
   const idLista = parseInt(req.params.id_lista, 10);
   console.log("GET /api/lists/:id_lista →", idLista, "user", req.user.id_usuario);
