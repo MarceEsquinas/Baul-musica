@@ -72,3 +72,5 @@ INSERT usuario (nombre,apellidos,dni,correo,rol,password) VALUES ('paco','lobato
 '23456');
 ALTER TABLE album_detalle
   ADD CONSTRAINT uniq_album_cancion UNIQUE (id_album, id_cancion);
+  ALTER TABLE lista
+ADD COLUMN es_publica BOOLEAN NOT NULL DEFAULT false;
